@@ -62,6 +62,7 @@ mod tests {
     use super::{Size, get_term_size};
     use std::process::{Command, Output, Stdio};
 
+    #[cfg(target_os = "linux")]
     pub fn stty_size() -> Output {
         // execute the following command on shell:
         // stty -F /dev/stderr size
