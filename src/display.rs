@@ -1,6 +1,7 @@
 #![allow(unused)]
 use crate::dataframe::DataFrame;
 use crate::termsize;
+use serde::Serialize;
 use std::error::Error;
 use std::fmt::Debug;
 use std::io;
@@ -9,20 +10,25 @@ use tabled::{
     Table, Tabled,
     settings::{Height, Settings, Style, Width, peaker::Priority},
 };
-pub fn display<T: Tabled + Debug>(dataframe: &Vec<Vec<T>>) -> Result<(), Box<dyn Error>> {
+pub fn display<T: Tabled + Debug + Serialize>(
+    dataframe: &Vec<Vec<T>>,
+) -> Result<(), Box<dyn Error>> {
     let term_size = termsize::get_term_size().unwrap_or_else(|| {
         println!("Error: something went wrong");
         std::process::exit(1)
     });
-    let window_rows = term_size.rows as usize;
-    let window_cols = term_size.cols as usize;
+    let height = term_size.rows as usize;
+    let width = term_size.cols as usize;
 
     let mut current_pos: usize = 0;
     let mut records_counter: usize = 0;
     let mut done = false;
 
+    // Convert dataframe to be csv-ready
+    let data: Vec<String> = vec![];
+
     while !done {
-        let max = current_pos + window_rows - 1;
+        let max = current_pos + height - 1;
 
         for i in current_pos..max {
             if i >= dataframe.len() {
@@ -31,7 +37,7 @@ pub fn display<T: Tabled + Debug>(dataframe: &Vec<Vec<T>>) -> Result<(), Box<dyn
             }
             let line = &dataframe[i];
 
-            println!("{:?}", line);
+            println!("{:#?}", line);
 
             if i == max - 1 {
                 current_pos = i;
