@@ -10,9 +10,7 @@ use tabled::{
     Table, Tabled,
     settings::{Height, Settings, Style, Width, peaker::Priority},
 };
-pub fn display<T: Tabled + Debug + Serialize>(
-    dataframe: &Vec<Vec<T>>,
-) -> Result<(), Box<dyn Error>> {
+pub fn display<T: Tabled + Debug + Serialize>(data: &Vec<Vec<T>>) -> Result<(), Box<dyn Error>> {
     let term_size = termsize::get_term_size().unwrap_or_else(|| {
         println!("Error: something went wrong");
         std::process::exit(1)
@@ -31,11 +29,11 @@ pub fn display<T: Tabled + Debug + Serialize>(
         let max = current_pos + height - 1;
 
         for i in current_pos..max {
-            if i >= dataframe.len() {
+            if i >= data.len() {
                 done = true;
                 break;
             }
-            let line = &dataframe[i];
+            let line = &data[i];
 
             println!("{:#?}", line);
 

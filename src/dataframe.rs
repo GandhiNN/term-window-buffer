@@ -1,8 +1,11 @@
 #![allow(unused)]
+use crate::termsize;
 use csv;
 use serde::Serialize;
 use std::error::Error;
+use std::fmt::Debug;
 use std::fs::File;
+use std::io::{Read, Write};
 use tabled::{Table, Tabled};
 
 #[derive(Debug)]
@@ -43,7 +46,7 @@ impl From<csv::StringRecord> for Record {
 }
 
 impl DataFrame {
-    pub fn new(csv_path: &str) -> Result<Self, Box<dyn Error>> {
+    pub fn from_csv(csv_path: &str) -> Result<Self, Box<dyn Error>> {
         let file = File::open(csv_path)?;
         let mut reader = csv::ReaderBuilder::new()
             .has_headers(true)
@@ -63,6 +66,48 @@ impl DataFrame {
             data: records,
         })
     }
+
+    pub fn display(&self) {
+        let term_size = termsize::get_term_size().unwrap_or_else(|| {
+            println!("Error: something went wrong");
+            std::process::exit(1)
+        });
+        let height = term_size.rows as usize;
+        let width = term_size.cols as usize;
+
+        let mut current_pos: usize = 0;
+        let mut records_counter: usize = 0;
+        let mut done = false;
+
+        while !done {
+            let max = current_pos + height - 1;
+
+            for i in current_pos..max {
+                if i >= self.data.len() {
+                    done = true;
+                    break;
+                }
+                let line = &self.data[i];
+
+                println!("{:#?}", line);
+
+                if i == max - 1 {
+                    current_pos = i;
+                }
+            }
+
+            if !done {
+                print!("\x1b[92m[Press Enter for Next page or \"q\" to quit...] \x1b[0m");
+                std::io::stdout().flush().unwrap();
+
+                let mut command = String::new();
+                std::io::stdin().read_line(&mut command).unwrap();
+                if command.trim() == "q" {
+                    done = true;
+                }
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -73,7 +118,7 @@ mod tests {
 
     #[test]
     fn test_csv_reader() {
-        let tab = DataFrame::new(CSV);
+        let tab = DataFrame::from_csv(CSV);
         println!("{:#?}", tab);
     }
 }
