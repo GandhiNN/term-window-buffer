@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 libc = "0.2"
 csv = "1"
+tabled = "0.19.0"
