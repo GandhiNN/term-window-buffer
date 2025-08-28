@@ -8,9 +8,9 @@ const CSV: &str = "files/annual-enterprise-survey-2024-financial-year-provisiona
 
 fn main() {
     let us = termsize::get_term_size();
-    // println!("{:#?}", us);
+    println!("{:#?}", us);
     let tab = DataFrame::new(CSV);
-    // println!("{:#?}", tab);
+
     let df = tab.unwrap().data;
     let _ = display::display(&df);
 }
