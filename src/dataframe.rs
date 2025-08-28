@@ -1,5 +1,6 @@
 #![allow(unused)]
 use csv;
+use serde::Serialize;
 use std::error::Error;
 use std::fs::File;
 use tabled::{Table, Tabled};
@@ -10,7 +11,7 @@ pub struct DataFrame {
     pub data: Vec<Vec<Record>>,
 }
 
-#[derive(Tabled, Debug)]
+#[derive(Serialize, Tabled, Debug)]
 pub struct Record {
     pub year: i32,
     pub agg_nzsioc: String,
