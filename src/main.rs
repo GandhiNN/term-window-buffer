@@ -12,8 +12,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("{:#?}", us);
     let df = DataFrame::from_csv(CSV)?;
 
-    // let df = tab.unwrap().data;
-    // let _ = display::display(&df);
-    df.display();
+    // Show csv representation
+    df.show_csv();
     Ok(())
 }

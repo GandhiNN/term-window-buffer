@@ -67,7 +67,7 @@ impl DataFrame {
         })
     }
 
-    pub fn display(&self) {
+    pub fn show_csv(&self) {
         let term_size = termsize::get_term_size().unwrap_or_else(|| {
             println!("Error: something went wrong");
             std::process::exit(1)
