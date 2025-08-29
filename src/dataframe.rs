@@ -11,7 +11,7 @@ use tabled::{Table, Tabled};
 #[derive(Debug)]
 pub struct DataFrame {
     pub header: Vec<String>,
-    pub data: Vec<Vec<Record>>,
+    pub data: Vec<Record>,
 }
 
 #[derive(Serialize, Tabled, Debug)]
@@ -54,10 +54,10 @@ impl DataFrame {
         let csv_header = reader.headers()?;
 
         let header: Vec<String> = csv_header.into_iter().map(|r| r.to_string()).collect();
-        let mut records: Vec<Vec<Record>> = vec![];
+        let mut records: Vec<Record> = vec![];
 
         for result in reader.records() {
-            let data: Vec<Record> = result.into_iter().map(|r| Record::from(r)).collect();
+            let data: Record = result.map(|r| Record::from(r))?;
             records.push(data);
         }
 
@@ -87,9 +87,20 @@ impl DataFrame {
                     done = true;
                     break;
                 }
-                let line = &self.data[i];
-
-                println!("{:#?}", line);
+                if i == 0 {
+                    let mut wtr = csv::WriterBuilder::new()
+                        .has_headers(true)
+                        .from_writer(vec![]);
+                    wtr.serialize(&self.data[i]);
+                    let line = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
+                    print!("{line}");
+                }
+                let mut wtr = csv::WriterBuilder::new()
+                    .has_headers(false)
+                    .from_writer(vec![]);
+                wtr.serialize(&self.data[i]);
+                let line = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
+                print!("{line}");
 
                 if i == max - 1 {
                     current_pos = i;
