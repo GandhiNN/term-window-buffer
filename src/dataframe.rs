@@ -94,13 +94,14 @@ impl DataFrame {
                     wtr.serialize(&self.data[i]);
                     let line = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
                     print!("{line}");
+                } else {
+                    let mut wtr = csv::WriterBuilder::new()
+                        .has_headers(false)
+                        .from_writer(vec![]);
+                    wtr.serialize(&self.data[i]);
+                    let line = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
+                    print!("{line}");
                 }
-                let mut wtr = csv::WriterBuilder::new()
-                    .has_headers(false)
-                    .from_writer(vec![]);
-                wtr.serialize(&self.data[i]);
-                let line = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
-                print!("{line}");
 
                 if i == max - 1 {
                     current_pos = i;
